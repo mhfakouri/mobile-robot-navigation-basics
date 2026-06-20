@@ -1,50 +1,50 @@
-from pathlib import Path
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Output folder for generated plots.
-OUTPUT_DIR = Path(__file__).resolve().parents[2] / "outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
+# this is the output folder
+if not os.path.exists("outputs"):
+    os.makedirs("outputs")
 
-# Terrain labels:
-# 0 = flat terrain
-# 1 = rough terrain
-# 2 = high-risk terrain, for example snow or ice
-# 9 = obstacle
+# 0 means normal ground
+# 1 means rough ground
+# 2 means risky ground like snow or ice
+# 9 means obstacle
 grid = np.zeros((10, 10), dtype=int)
 
-# Add simple terrain areas.
+# putting some areas manually
 grid[2:5, 3:6] = 1
 grid[6:8, 1:4] = 2
 grid[4:8, 7] = 9
 
-# Start and goal positions.
-# Format: row, column
 start = (0, 0)
 goal = (9, 9)
 
-# Convert terrain labels into movement costs.
-cost_map = np.ones_like(grid, dtype=float)
-cost_map[grid == 1] = 3.0
-cost_map[grid == 2] = 6.0
-cost_map[grid == 9] = 999.0
+# now I make another grid for cost
+cost = np.ones((10, 10))
 
-print("Grid shape:", grid.shape)
-print("Start:", start)
-print("Goal:", goal)
-print("Number of rough cells:", np.sum(grid == 1))
-print("Number of high-risk cells:", np.sum(grid == 2))
-print("Number of obstacle cells:", np.sum(grid == 9))
+cost[grid == 1] = 3
+cost[grid == 2] = 6
+cost[grid == 9] = 999
+
+print("grid size is:", grid.shape)
+print("start point:", start)
+print("goal point:", goal)
+
+print("rough cells:", np.sum(grid == 1))
+print("risky cells:", np.sum(grid == 2))
+print("obstacle cells:", np.sum(grid == 9))
 
 plt.figure()
 plt.imshow(grid)
+
+# scatter uses x,y but my points are row,col, so I put [1] first
 plt.scatter(start[1], start[0], marker="o", label="start")
 plt.scatter(goal[1], goal[0], marker="x", label="goal")
-plt.title("Practice 01 — Basic Terrain Grid")
+
+plt.title("Practice 01 - simple terrain grid")
 plt.legend()
-plt.tight_layout()
+plt.savefig("outputs/practice_01_grid_basics.png")
+plt.show()
 
-plt.savefig(OUTPUT_DIR / "practice_01_grid_basics.png", dpi=150)
-plt.close()
-
-print("Saved plot to outputs/practice_01_grid_basics.png")
+print("done")
