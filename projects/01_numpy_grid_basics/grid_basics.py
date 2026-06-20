@@ -44,7 +44,7 @@ plt.scatter(goal[1], goal[0], marker="x", label="goal")
 
 plt.title("Practice 01 - simple terrain grid")
 plt.legend()
-plt.savefig("outputs/practice_01_grid_basics.png")
+plt.savefig("outputs/practice_01_grid_basics1.png")
 plt.show()
 
 print("done")

@@ -59,7 +59,7 @@ plt.scatter(goal[1], goal[0], marker="x", label="goal")
 plt.title("Practice 02 - bigger terrain map")
 plt.legend()
 
-plt.savefig("outputs/practice_02_terrain_plot.png")
+plt.savefig("outputs/practice_02_terrain_plot1.png")
 plt.show()
 
 print("plot saved")
