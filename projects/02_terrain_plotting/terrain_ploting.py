@@ -1,66 +1,64 @@
-from pathlib import Path
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Output folder for generated plots.
-OUTPUT_DIR = Path(__file__).resolve().parents[2] / "outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
+if not os.path.exists("outputs"):
+    os.makedirs("outputs")
 
-# Terrain labels:
-# 0 = flat terrain
-# 1 = rough terrain
-# 2 = high-risk terrain, for example snow or ice
-# 9 = obstacle
+# bigger map than the first example
 grid = np.zeros((30, 30), dtype=int)
 
-# Add rough terrain.
-# This could represent uneven forest ground.
+# 0 flat
+# 1 rough
+# 2 snow or ice or risky part
+# 9 obstacle
+
+# rough area
 grid[5:14, 5:12] = 1
 
-# Add high-risk terrain.
-# This could represent snow, ice, soft soil, or slippery terrain.
+# risky area
 grid[16:24, 2:10] = 2
 
-# Add obstacle structures.
-# These could represent trees, rocks, blocked areas, or unsafe regions.
+# obstacles, like walls or blocked region
 grid[8:25, 18] = 9
 grid[20, 18:25] = 9
 
-# Add a few random obstacles.
-# The random seed makes the result repeatable.
+# random small obstacles
 np.random.seed(7)
 
-for _ in range(35):
-    row = np.random.randint(0, 30)
-    col = np.random.randint(0, 30)
-    grid[row, col] = 9
+i = 0
+while i < 35:
+    r = np.random.randint(0, 30)
+    c = np.random.randint(0, 30)
+    grid[r, c] = 9
+    i = i + 1
 
-# Define start and goal.
 start = (2, 2)
 goal = (27, 27)
 
-# Make sure start and goal are not obstacles.
+# I dont want start or goal to be obstacle by mistake
 grid[start] = 0
 grid[goal] = 0
 
-print("Grid shape:", grid.shape)
-print("Start:", start)
-print("Goal:", goal)
-print("Flat cells:", np.sum(grid == 0))
-print("Rough cells:", np.sum(grid == 1))
-print("High-risk cells:", np.sum(grid == 2))
-print("Obstacle cells:", np.sum(grid == 9))
+print("map size:", grid.shape)
+print("start:", start)
+print("goal:", goal)
 
-# Plot terrain map.
+print("flat:", np.sum(grid == 0))
+print("rough:", np.sum(grid == 1))
+print("risky:", np.sum(grid == 2))
+print("obstacle:", np.sum(grid == 9))
+
 plt.figure()
 plt.imshow(grid)
+
 plt.scatter(start[1], start[0], marker="o", label="start")
 plt.scatter(goal[1], goal[0], marker="x", label="goal")
-plt.title("Practice 02 — Terrain Map")
+
+plt.title("Practice 02 - bigger terrain map")
 plt.legend()
-plt.tight_layout()
 
-plt.savefig(OUTPUT_DIR / "practice_02_terrain_plot.png", dpi=150)
-plt.close()
+plt.savefig("outputs/practice_02_terrain_plot.png")
+plt.show()
 
-print("Saved plot to outputs/practice_02_terrain_plot.png")
+print("plot saved")
