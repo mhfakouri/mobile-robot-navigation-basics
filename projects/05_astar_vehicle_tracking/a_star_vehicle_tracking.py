@@ -254,7 +254,7 @@ if found:
         path_rows.append(p[0])
         path_cols.append(p[1])
 
-    plt.plot(path_cols, path_rows, linewidth=2, label="A star path")
+    plt.plot(path_cols, path_rows, linewidth=2, label="A* path")
 
 # plot vehicle trajectory
 plt.plot(x_list, y_list, linewidth=2, label="vehicle tracking")
@@ -266,7 +266,7 @@ plt.scatter(start[1], start[0], marker="o", label="start")
 plt.scatter(goal[1], goal[0], marker="x", label="goal")
 
 plt.title("Practice 05 - A star path with vehicle tracking")
-plt.legend(loc="lower right")
+plt.legend()
 
 save_name = os.path.join(output_folder, "practice_05_astar_vehicle_tracking.png")
 plt.savefig(save_name)
