@@ -3,8 +3,21 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-if not os.path.exists("outputs"):
-    os.makedirs("outputs")
+this_file = os.path.abspath(__file__)
+this_folder = os.path.dirname(this_file)
+
+# going up from:
+# projects/04_vehicle_tracking/
+# to:
+# mobile_robot_navigation_basics/
+main_folder = os.path.dirname(os.path.dirname(this_folder))
+
+output_folder = os.path.join(main_folder, "outputs")
+
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+print("output folder is:", output_folder)
 
 # This is just a simple path.
 # Later, this can be replaced by the A star path.
@@ -93,7 +106,9 @@ plt.ylabel("y")
 plt.axis("equal")
 plt.legend()
 
-plt.savefig("outputs/practice_04_vehicle_tracking.png")
+save_name = os.path.join(output_folder, "practice_04_vehicle_tracking.png")
+plt.savefig(save_name)
+print("saved:", save_name)
 plt.show()
 
 print("saved: outputs/practice_04_vehicle_tracking.png")
