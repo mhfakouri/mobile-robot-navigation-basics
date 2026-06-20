@@ -266,7 +266,7 @@ plt.scatter(start[1], start[0], marker="o", label="start")
 plt.scatter(goal[1], goal[0], marker="x", label="goal")
 
 plt.title("Practice 05 - A star path with vehicle tracking")
-plt.legend()
+plt.legend(loc="lower right")
 
 save_name = os.path.join(output_folder, "practice_05_astar_vehicle_tracking.png")
 plt.savefig(save_name)
