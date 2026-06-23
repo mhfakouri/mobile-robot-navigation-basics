@@ -20,11 +20,12 @@ The project has these small practice steps:
 4. Simple vehicle tracking
 5. A* path with vehicle tracking
 6. Disturbance and simple tracking metrics
+7. Shortest path vs risk-aware planning
 
 The full idea is:
 
 ```text
-terrain map → terrain cost → A* path → waypoints → vehicle tracking → tracking error
+terrain map → terrain cost → A* path → risk-aware path → waypoints → vehicle tracking → tracking error
 ```
 
 ---
@@ -189,6 +190,48 @@ Run:
 ```bash
 python projects/06_disturbance_and_metrics/disturbance_and_mertrics.py
 ```
+
+---
+
+## 07 — Shortest path vs risk-aware planning
+
+After the disturbance test, I added one more comparison between two planners.
+
+The first one is a shortest path planner. It uses A* and tries to find the route with lower distance. In this case, flat, rough, and risky cells are almost treated same, so the planner may pass from a risky area if it makes the path shorter.
+
+The second one is a risk-aware planner. It also uses A*, but the terrain cost is different. Rough cells have more cost, and risky cells have much more cost. So the robot may choose a longer path, but with less terrain risk.
+
+![Shortest path planner](outputs/planned_path_shortest.png)
+
+The shortest path is more direct, but it crosses the risky region in the middle of the map.
+
+![Risk-aware path planner](outputs/planned_path_risk_aware.png)
+
+The risk-aware path is longer, but it avoid the risky cells.
+
+![Shortest path and risk-aware path comparison](outputs/planner_comparison_same_map.png)
+
+This figure is the main result of this part. It shows that the shortest path is not always the better path when the terrain is risky.
+
+| Planner         | Path length | Total terrain cost | Risk exposure | Tracking error | Success |
+| --------------- | ----------: | -----------------: | ------------: | -------------: | ------- |
+| Shortest path   |          25 |              179.0 |            14 |           1.81 | Yes     |
+| Risk-aware path |          33 |               33.0 |             0 |           1.71 | Yes     |
+
+The shortest path has lower distance, but it has much higher terrain cost. It also passes through 14 risky cells. The risk-aware path has more distance, but it had zero risky cells in this test.
+
+I think this part is useful because in rough terrain navigation, the robot should not only think about the shortest route. Sometimes a longer route can be safer or more reasonable.
+
+![Tracking comparison](outputs/planner_tracking_comparison.png)
+
+I also tested both planned paths with the same simple tracking model. This is still a very simple simulation, but it helps to compare planning and tracking together.
+
+Run:
+
+```bash
+python projects/07_shortest_vs_risk_aware_planning/shortest_vs_risk_aware.py
+```
+
 
 ---
 
