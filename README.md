@@ -249,7 +249,10 @@ The main things I practiced were:
 * tracking waypoints with a simple vehicle model,
 * adding small disturbance,
 * calculating simple tracking error.
+* comparing shortest path and risk-aware path,
+* checking terrain cost and risk exposure,
+* understanding that the shortest path is not always the safest path.
 
 This project is still basic. There is no ROS, no real robot, no camera, no LiDAR, and no advanced controller. The map is manually created and the terrain costs are also manually selected.
 
-But it was useful for me, because it made the relation between terrain representation, planning, and tracking more clear.
+But it was useful for me, because it made the relation between terrain representation, planning, tracking, and simple risk-aware decision making more clear.
