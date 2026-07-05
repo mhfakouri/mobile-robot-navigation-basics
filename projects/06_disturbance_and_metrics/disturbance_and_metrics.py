@@ -151,12 +151,10 @@ if found:
         row = path[j][0]
         col = path[j][1]
 
-        # grid is row,col but robot uses x,y
         waypoints.append([col, row])
 
         j = j + 3
 
-    # add final goal
     last_row = path[-1][0]
     last_col = path[-1][1]
     waypoints.append([last_col, last_row])
@@ -198,7 +196,6 @@ while i < 2000:
 
     dist = math.sqrt(dx*dx + dy*dy)
 
-    # save tracking error
     error_list.append(dist)
 
     if dist < 0.4:
@@ -220,7 +217,6 @@ while i < 2000:
 
     omega = k * theta_error
 
-    # check current terrain under robot
     grid_row = int(round(y))
     grid_col = int(round(x))
 
@@ -235,7 +231,6 @@ while i < 2000:
 
     terrain_here = grid[grid_row, grid_col]
 
-    # speed is slower in rough or risky terrain
     v = base_v
 
     if terrain_here == 1:
@@ -244,7 +239,6 @@ while i < 2000:
     if terrain_here == 2:
         v = 0.55
 
-    # small heading noise, like disturbance or slip
     noise = np.random.normal(0, 0.08)
 
     x = x + v * math.cos(theta) * dt
