@@ -1,100 +1,85 @@
-# Mobile Robot Navigation Basics
+# Mobile Robot Navigation: A* Planning, Risk-Aware Routing, and Disturbed Tracking
 
-This is a small Python practice project for mobile robot navigation basics.
-It is not a complete autonomous robot system. I made it to understand some simple parts of grid map, terrain cost, A* path planning, and vehicle tracking.
+This Python project demonstrates a compact mobile-robot navigation pipeline connecting terrain-grid representation, terrain-dependent path costs, A* planning, waypoint generation, unicycle-model trajectory tracking, disturbance injection, and quantitative performance evaluation.
 
-The project starts from a very basic terrain grid and then slowly adds more parts. I wanted to keep the code simple, because this was mostly for learning and practice.
+The final comparison contrasts a distance-focused route with a risk-aware route using path length, terrain cost, risk exposure, tracking error, and navigation success. The project is intentionally simulation-based and uses manually defined maps and terrain costs; it does not represent a complete autonomous navigation stack.
 
-GitHub folder:
-[mobile_robot_navigation_basics](https://github.com/mhfakouri/python-simple-examples/tree/main/robotics/mobile_robot_navigation_basics)
-
----
-
-## What this project includes
-
-The project has these small practice steps:
-
-1. Basic NumPy terrain grid
-2. Larger terrain map
-3. A* path planning
-4. Simple vehicle tracking
-5. A* path with vehicle tracking
-6. Disturbance and simple tracking metrics
-7. Shortest path vs risk-aware planning
-
-The full idea is:
+## Pipeline
 
 ```text
-terrain map → terrain cost → A* path → risk-aware path → waypoints → vehicle tracking → tracking error
+terrain map → terrain cost → A* path → risk-aware route → waypoints → vehicle tracking → performance metrics
 ```
 
----
+## Main Features
+
+- NumPy-based terrain-grid generation
+- Flat, rough, risky, and obstacle cell types
+- Four-connected A* path planning
+- Terrain-dependent planning costs
+- Unicycle-model waypoint tracking
+- Heading disturbance and terrain-dependent speed reduction
+- Path cost and risk-exposure calculation
+- Mean and maximum tracking-error calculation
+- Shortest-path versus risk-aware planning comparison
 
 ## Requirements
-
-I used only simple Python libraries:
 
 ```text
 numpy
 matplotlib
 ```
 
-Install them with:
+Install the dependencies with:
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+## Repository Structure
 
-## 01 — Basic terrain grid
+```text
+projects/
+├── 01_numpy_grid_basics/
+├── 02_terrain_plotting/
+├── 03_astar_path_planning/
+├── 04_vehicle_tracking/
+├── 05_astar_vehicle_tracking/
+├── 06_disturbance_and_metrics/
+└── 07_shortest_vs_risk_aware_planning/
+outputs/
+requirements.txt
+README.md
+```
 
-In the first script, I made a small 10 by 10 grid. Each cell has a number.
+## 1. Terrain-Grid Representation
+
+The first examples introduce a small grid and then a larger 30 × 30 terrain map. Each cell is assigned a terrain category:
 
 ```text
 0 = flat terrain
 1 = rough terrain
-2 = risky terrain, like snow or ice
+2 = risky terrain, such as snow or ice
 9 = obstacle
 ```
 
-This was the first step to understand how a terrain map can be made with NumPy.
+The terrain labels are manually specified and are not derived from sensor measurements.
 
-![Practice 01](outputs/practice_01_grid_basics.png)
+![Basic terrain grid](outputs/practice_01_grid_basics.png)
+
+![Larger terrain map](outputs/practice_02_terrain_plot.png)
 
 Run:
 
 ```bash
 python projects/01_numpy_grid_basics/grid_basics.py
-```
-
----
-
-## 02 — Larger terrain map
-
-Then I made a bigger 30 by 30 map. I added rough area, risky area, obstacle walls, and some random obstacles.
-
-The random obstacles are not from real sensor data. I just used them to make the map not too empty. It helped me to prepare a simple environment before path planning.
-
-![Practice 02](outputs/practice_02_terrain_plot.png)
-
-Run:
-
-```bash
 python projects/02_terrain_plotting/terrain_plot.py
 ```
 
----
+## 2. A* Path Planning
 
-## 03 — A* path planning
+The planner searches for a collision-free route from a start cell to a goal cell. Movement is limited to the four cardinal directions. Terrain costs allow rough and risky areas to be penalized more heavily than flat terrain.
 
-After making the terrain map, I added A* path planning.
-
-The planner tries to find a path from start to goal. It avoid obstacles and also uses terrain cost. Flat terrain has low cost, rough terrain has more cost, and risky terrain has higher cost.
-
-The blue line shows the A* path. It is not smooth because it is a grid path. It moves only up, down, left, and right.
-
-![Practice 03](outputs/practice_03_astar_path.png)
+![A* path](outputs/practice_03_astar_path.png)
 
 Run:
 
@@ -102,17 +87,11 @@ Run:
 python projects/03_astar_path_planning/astar_demo.py
 ```
 
----
+## 3. Unicycle-Model Tracking
 
-## 04 — Simple vehicle tracking
+A simplified vehicle model with state `(x, y, theta)` tracks a sequence of waypoints. The model omits detailed wheel, actuator, slip, and contact dynamics, but provides a transparent example of connecting planned grid paths to closed-loop motion.
 
-Before connecting A* to the vehicle, I made a small vehicle tracking example.
-
-In this part, I wrote some waypoints manually. The vehicle follows them using a simple unicycle model with `x`, `y`, and `theta`.
-
-The model is not very realistic. It does not include motor dynamics, slip, wheel limits, or real terrain effect. But it was useful for me to understand the basic tracking idea.
-
-![Practice 04](outputs/practice_04_vehicle_tracking.png)
+![Vehicle tracking](outputs/practice_04_vehicle_tracking.png)
 
 Run:
 
@@ -120,36 +99,11 @@ Run:
 python projects/04_vehicle_tracking/vehicle_tracking.py
 ```
 
----
+## 4. A* Path and Vehicle Tracking
 
-## 05 — A* path with vehicle tracking
+Grid cells are converted from `(row, column)` coordinates to Cartesian-style `(x, y)` waypoints. A subset of path cells is used to reduce excessive turning in the simplified tracker.
 
-In this part, I connected the A* path to the vehicle tracking.
-
-A* gives the path as grid points in this format:
-
-```text
-row, column
-```
-
-But the vehicle model uses:
-
-```text
-x, y
-```
-
-So I converted the points like this:
-
-```text
-x = column
-y = row
-```
-
-I also did not use every point from A* as a waypoint. I selected every few points, because the path has many grid cells and the simple vehicle can turn too much if all of them used.
-
-The final plot shows the terrain map, A* path, selected waypoints, and vehicle tracking path.
-
-![Practice 05](outputs/practice_05_astar_vehicle_tracking.png)
+![A* path and vehicle tracking](outputs/practice_05_astar_vehicle_tracking.png)
 
 Run:
 
@@ -157,17 +111,18 @@ Run:
 python projects/05_astar_vehicle_tracking/astar_vehicle_tracking.py
 ```
 
----
+## 5. Disturbance and Tracking Metrics
 
-## 06 — Disturbance and simple metrics
+The disturbed-tracking example adds bounded random heading noise and terrain-dependent speed reduction. It reports:
 
-I also added one small disturbance test.
+- A* path length
+- Number of selected waypoints
+- Total path cost
+- Rough and risky cells traversed
+- Mean tracking error
+- Maximum tracking error
 
-In this version, the vehicle does not move in perfect condition. I added a small random heading noise, and I also changed the vehicle speed based on terrain type. The vehicle moves slower on rough terrain and slower again on risky terrain.
-
-This is not a realistic winter terrain simulation. It is only a small test to see what happens when the vehicle motion is not perfect.
-
-The script also calculates some simple metrics:
+A representative run produced:
 
 ```text
 A* path cells: 51
@@ -179,52 +134,39 @@ mean tracking error: 1.71
 max tracking error: 3.30
 ```
 
-The path did not pass from rough or risky cells in this run, so both of them was zero. The vehicle finished near the goal position, but the tracking error is still visible because the model has disturbance and it is very simple.
+These values are specific to the included map, random seeds, controller parameters, and simplified error definition.
 
-![Practice 06 disturbed tracking](outputs/practice_06_disturbed_tracking.png)
+![Disturbed tracking](outputs/practice_06_disturbed_tracking.png)
 
-![Practice 06 tracking error](outputs/practice_06_tracking_error.png)
+![Tracking error](outputs/practice_06_tracking_error.png)
 
 Run:
 
 ```bash
-python projects/06_disturbance_and_metrics/disturbance_and_mertrics.py
+python projects/06_disturbance_and_metrics/disturbance_and_metrics.py
 ```
 
----
+## 6. Shortest-Path versus Risk-Aware Planning
 
-## 07 — Shortest path vs risk-aware planning
+The final example compares two A* cost configurations on the same map:
 
-After the disturbance test, I added one more comparison between two planners.
+- **Distance-focused planning:** prioritizes a shorter route and may cross risky terrain.
+- **Risk-aware planning:** assigns larger costs to rough and risky cells, allowing a longer but lower-risk route.
 
-The first one is a shortest path planner. It uses A* and tries to find the route with lower distance. In this case, flat, rough, and risky cells are almost treated same, so the planner may pass from a risky area if it makes the path shorter.
+![Shortest path](outputs/planned_path_shortest.png)
 
-The second one is a risk-aware planner. It also uses A*, but the terrain cost is different. Rough cells have more cost, and risky cells have much more cost. So the robot may choose a longer path, but with less terrain risk.
+![Risk-aware path](outputs/planned_path_risk_aware.png)
 
-![Shortest path planner](outputs/planned_path_shortest.png)
+![Planner comparison](outputs/planner_comparison_same_map.png)
 
-The shortest path is more direct, but it crosses the risky region in the middle of the map.
+| Planner | Path length | Total terrain cost | Risk exposure | Tracking error | Success |
+|---|---:|---:|---:|---:|---|
+| Distance-focused path | 25 | 179.0 | 14 | 1.81 | Yes |
+| Risk-aware path | 33 | 33.0 | 0 | 1.71 | Yes |
 
-![Risk-aware path planner](outputs/planned_path_risk_aware.png)
-
-The risk-aware path is longer, but it avoid the risky cells.
-
-![Shortest path and risk-aware path comparison](outputs/planner_comparison_same_map.png)
-
-This figure is the main result of this part. It shows that the shortest path is not always the better path when the terrain is risky.
-
-| Planner         | Path length | Total terrain cost | Risk exposure | Tracking error | Success |
-| --------------- | ----------: | -----------------: | ------------: | -------------: | ------- |
-| Shortest path   |          25 |              179.0 |            14 |           1.81 | Yes     |
-| Risk-aware path |          33 |               33.0 |             0 |           1.71 | Yes     |
-
-The shortest path has lower distance, but it has much higher terrain cost. It also passes through 14 risky cells. The risk-aware path has more distance, but it had zero risky cells in this test.
-
-I think this part is useful because in rough terrain navigation, the robot should not only think about the shortest route. Sometimes a longer route can be safer or more reasonable.
+For this specific scenario, the risk-aware route is longer but avoids the risky cells crossed by the distance-focused route.
 
 ![Tracking comparison](outputs/planner_tracking_comparison.png)
-
-I also tested both planned paths with the same simple tracking model. This is still a very simple simulation, but it helps to compare planning and tracking together.
 
 Run:
 
@@ -232,27 +174,35 @@ Run:
 python projects/07_shortest_vs_risk_aware_planning/shortest_vs_risk_aware.py
 ```
 
+## Reproducibility Notes
 
----
+- Random seeds are fixed in the included examples where random obstacles or disturbances are generated.
+- The maps and terrain costs are manually defined.
+- Reported metrics are demonstration results, not guarantees for other maps or parameter settings.
+- The tracking error is calculated relative to the active waypoint in the simplified controller.
 
-## What I learned
+## Limitations
 
-This project helped me understand the basic connection between map, path planning, and vehicle tracking.
+- No ROS 2 integration in this repository
+- No real robot or sensor data
+- No LiDAR, camera, localization, or mapping subsystem
+- No kinodynamic or continuous-curvature planning
+- No wheel-slip or actuator model
+- No formal safety guarantee
+- Manually selected terrain categories and cost weights
 
-The main things I practiced were:
+## Possible Extensions
 
-* making a grid map with NumPy,
-* assigning terrain type and cost,
-* using A* for simple path planning,
-* avoiding obstacle cells,
-* converting grid path to vehicle waypoints,
-* tracking waypoints with a simple vehicle model,
-* adding small disturbance,
-* calculating simple tracking error.
-* comparing shortest path and risk-aware path,
-* checking terrain cost and risk exposure,
-* understanding that the shortest path is not always the safest path.
+- Integrate the planner and tracker with ROS 2
+- Add diagonal motion and alternative heuristics
+- Compare A* with Dijkstra, D* Lite, or sampling-based planners
+- Add continuous path smoothing and curvature constraints
+- Use real or procedurally generated elevation and traversability maps
+- Evaluate multiple random seeds and maps
+- Introduce model-predictive or robust trajectory tracking
 
-This project is still basic. There is no ROS, no real robot, no camera, no LiDAR, and no advanced controller. The map is manually created and the terrain costs are also manually selected.
+## Author
 
-But it was useful for me, because it made the relation between terrain representation, planning, tracking, and simple risk-aware decision making more clear.
+Mohammad Hossein Fakouri  
+M.Sc. Mechanical Engineering – Applied Design  
+Research interests: robotics, control under uncertainty, learning-based control, and robot simulation
